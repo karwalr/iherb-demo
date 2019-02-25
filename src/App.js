@@ -1,26 +1,67 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import './App.css';
 
+import FormTemplate from './components/Form';
+import Report from './components/Report';
+
+import { Container, Nav, NavItem } from 'reactstrap';
+
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      hasReports: localStorage.getItem('reports') ? true : false
+    };
+  }
+
+  renderReportLink() {
+    if (this.state.hasReports) {
+      return (
+        <Link to="/report" className="nav-link">
+          Report
+        </Link>
+      );
+    } else {
+      return <span className="nav-link">Report</span>;
+    }
+  }
+
+  updateLinks() {
+    this.setState({
+      hasReports: localStorage.getItem('reports') ? true : false
+    });
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Container>
+        <BrowserRouter>
+          <div>
+            <Nav>
+              <NavItem>
+                <Link to="/" className="nav-link">
+                  Form
+                </Link>
+              </NavItem>
+              <NavItem>{this.renderReportLink()}</NavItem>
+            </Nav>
+
+            <Route
+              path="/"
+              exact
+              render={props => (
+                <FormTemplate
+                  {...props}
+                  UpdateNavigation={() => this.updateLinks()}
+                />
+              )}
+            />
+            <Route path="/report" component={Report} />
+          </div>
+        </BrowserRouter>
+      </Container>
     );
   }
 }
